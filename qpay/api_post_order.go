@@ -57,6 +57,7 @@ type PostOrderArgs struct {
 	TradeType         int
 	NotifyUrl         string
 	DeviceInfo        string
+	OutTradeNo        string
 }
 
 type PostOrderResult struct {
@@ -68,7 +69,12 @@ type PostOrderResult struct {
 }
 
 func (ctx *Context) PostOrder(args *PostOrderArgs) (*PostOrderResult, error) {
-	nonce, tradeNumber := GeneratorNonce(), ctx.tradeNumberGenerator()
+	nonce := GeneratorNonce()
+	tradeNumber := args.OutTradeNo
+	ctx.tradeNumberGenerator()
+	if tradeNumber == "" {
+		tradeNumber = GeneratorTradeNumber()
+	}
 	m := StringMap{
 		"mch_id":           ctx.merchantId,
 		"nonce_str":        nonce,

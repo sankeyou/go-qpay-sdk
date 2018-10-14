@@ -62,7 +62,7 @@ func NotifyOrderParseRequest(body []byte) (*NotifyOrderArgs, error) {
 	args.CouponFee, _ = strconv.ParseUint(raw.CouponFee, 10, 64)
 	args.TransactionId = raw.TransactionId
 	args.TradeNumber = raw.TradeNumber
-	args.TimeEnd, _ = time.Parse("20060102150405", raw.TimeEnd)
+	args.TimeEnd, _ = time.ParseInLocation("20060102150405", raw.TimeEnd, time.Local)
 	args.OpenId = raw.OpenId
 
 	return args, nil
@@ -101,6 +101,7 @@ func (ctx *Context) NotifyOrderCheckSign(args *NotifyOrderArgs) bool {
 	return raw.Sign == ctx.sign(m)
 }
 
+/*
 func NotifyOrdeGenerateResponse(success bool, message string) ([]byte, error) {
 	m := StringMap{}
 	if success {
@@ -110,4 +111,13 @@ func NotifyOrdeGenerateResponse(success bool, message string) ([]byte, error) {
 		m["return_msg"] = message
 	}
 	return xml.MarshalIndent(m, "", "  ")
+}
+*/
+
+func NotifyOrderResponse(success bool, message string) string {
+	return_code := "FAIL"
+	if success {
+		return_code = "SUCCESS"
+	}
+	return "<xml><return_code>" + return_code + "</return_code><return_msg>" + message + "</return_msg></xml>"
 }
